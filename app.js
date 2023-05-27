@@ -1,10 +1,8 @@
 const express = require("express");
-const app = express();
 const path = require("path");
 const env = require("dotenv");
 const mongoose = require("mongoose");
 const Campground = require("./models/campground");
-const { log } = require("console");
 
 // database config
 env.config();
@@ -24,6 +22,7 @@ db.once("open", () => {
 });
 
 // app config
+const app = express();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
