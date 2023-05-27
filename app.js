@@ -39,15 +39,10 @@ app.get("/", (req, res) => {
     res.render("home");
 });
 
-app.get("/makecampground", async (req, res) => {
+app.get("/campgrounds", async (req, res) => {
     logRoutes(req, res);
-    const camp = new Campground({
-        title: "My Backyard",
-        description: "cheap camping",
-    });
-    await camp.save();
-    logRoutes(req, res, `created ${camp.title}`);
-    res.send(camp);
+    const campgrounds = await Campground.find({});
+    res.render("campgrounds/index", { campgrounds });
 });
 
 // app listen
