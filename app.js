@@ -3,6 +3,7 @@ const path = require("path");
 const env = require("dotenv");
 const mongoose = require("mongoose");
 const Campground = require("./models/campground");
+const { log } = require("console");
 
 // database config
 env.config();
@@ -43,6 +44,12 @@ app.get("/campgrounds", async (req, res) => {
     logRoutes(req, res);
     const campgrounds = await Campground.find({});
     res.render("campgrounds/index", { campgrounds });
+});
+
+app.get("/campgrounds/:id", async (req, res) => {
+    logRoutes(req, res);
+    const campground = await Campground.findById(req.params.id);
+    res.render("campgrounds/show", { campground });
 });
 
 // app listen
