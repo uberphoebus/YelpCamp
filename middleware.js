@@ -12,13 +12,13 @@ app.use("/dogs", (req, res, next) => {
     console.log("I love dogs");
     next();
 });
-app.use((req, res, next) => {
+const verifyPassword = (req, res, next) => {
     const { password } = req.query;
     if (password === "chickennugget") {
         next();
     }
     res.send("SORRY YOU NEED A PASSWORD!");
-});
+};
 // app.use((req, res, next) => {
 //     console.log("this is my first middleware");
 //     next();
@@ -43,7 +43,7 @@ app.get("/dogs", (req, res) => {
     res.send("woof woof");
 });
 
-app.get("/secret", (req, res) => {
+app.get("/secret", verifyPassword, (req, res) => {
     res.send("my secret is");
 });
 
