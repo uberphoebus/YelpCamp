@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/uberphoebus/YelpCamp#readme",
   "dependencies": {
+    "colors": "^1.4.0",
     "dotenv": "^16.0.3",
     "ejs": "^3.1.9",
     "ejs-mate": "^4.0.0",
