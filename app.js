@@ -2,8 +2,8 @@ const express = require("express");
 const path = require("path");
 const env = require("dotenv");
 const mongoose = require("mongoose");
+const methodOverride = require("method-override");
 const Campground = require("./models/campground");
-const { log } = require("console");
 
 // database config
 env.config();
@@ -27,6 +27,7 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
 
 // functions
 const logRoutes = (req, res, action = "") => {
@@ -63,6 +64,21 @@ app.get("/campgrounds/:id", async (req, res) => {
     logRoutes(req, res);
     const campground = await Campground.findById(req.params.id);
     res.render("campgrounds/show", { campground });
+});
+
+app.get("/campgrounds/:id/edit", async (req, res) => {
+    logRoutes(req, res);
+    const campground = await Campground.findById(req.params.id);
+    res.render("campgrounds/edit", { campground });
+});
+
+app.put("/campgrounds/:id", async (req, res) => {
+    const { id } = req.params;
+    const campground = await Campground.findByIdAndUpdate(id, {
+        ...req.body.campground,
+    });
+    logRoutes(req, res, `updated ${campground.title}`);
+    res.redirect(`/campgrounds/${campground._id}`);
 });
 
 // app listen
