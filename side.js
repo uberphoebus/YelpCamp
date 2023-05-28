@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+const colors = require("colors");
+const AppError = require("./AppError");
 
 app.use(morgan("dev"));
 app.use((req, res, next) => {
@@ -17,25 +19,16 @@ const verifyPassword = (req, res, next) => {
     if (password === "chickennugget") {
         next();
     }
-    res.send("SORRY YOU NEED A PASSWORD!");
+    throw new AppError("password required", 401);
 };
-// app.use((req, res, next) => {
-//     console.log("this is my first middleware");
-//     next();
-//     console.log("this is my first middleware after calling next()");
-// });
-// app.use((req, res, next) => {
-//     console.log("this is my second middleware");
-//     return next();
-// });
-// app.use((req, res, next) => {
-//     console.log("this is my third middleware");
-//     return next();
-// });
 
 app.get("/", (req, res) => {
     console.log(`request date: ${req.requestTime}`);
     res.send("home page");
+});
+
+app.get("/error", (req, res) => {
+    chicken.fly();
 });
 
 app.get("/dogs", (req, res) => {
@@ -47,10 +40,27 @@ app.get("/secret", verifyPassword, (req, res) => {
     res.send("my secret is");
 });
 
+app.get("/admin", (req, res) => {
+    throw new AppError("you are not an admin", 403);
+});
+
 app.use((req, res) => {
     res.status(404).send("NOT FOUND!");
 });
 
+// app.use((err, req, res, next) => {
+//     console.log("***********************************");
+//     console.log("**************ERROR****************");
+//     console.log("***********************************");
+//     // res.status(500).send("we got error");
+//     next(err);
+// });
+
+app.use((err, req, res, next) => {
+    const { status = 500, message = "something went wrong" } = err;
+    res.status(status).send(message);
+});
+
 app.listen(3001, () => {
-    console.log("server on port 3001");
+    console.log(`[${"server".padEnd(7)}] on port 3000`.brightCyan);
 });
