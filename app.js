@@ -6,7 +6,9 @@ const mongoose = require("mongoose");
 
 const morgan = require("morgan");
 const ejsMate = require("ejs-mate");
+const session = require("express-session");
 const methodOverride = require("method-override");
+const colors = require("colors");
 
 const ExpressError = require("./utils/ExpressError");
 
@@ -36,6 +38,8 @@ db.once("open", () => {
 // app/middleware config
 const app = express();
 
+app.use(morgan("dev"));
+
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -44,7 +48,17 @@ app.use(methodOverride("_method"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(morgan("dev"));
+const sessionConfig = {
+    secret: "thishouldbeabettersecret!",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
+};
+app.use(session(sessionConfig));
 
 // routes
 app.use("/campgrounds", campgrounds);
