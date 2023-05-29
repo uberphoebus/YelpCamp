@@ -1,19 +1,17 @@
 const express = require("express");
+
 const path = require("path");
 const env = require("dotenv");
 const mongoose = require("mongoose");
-const ejsMate = require("ejs-mate");
-const Joi = require("joi");
-const { campgroundSchema, reviewSchema } = require("./schemas.js");
-const catchAsync = require("./utils/catchAsync");
-const ExpressError = require("./utils/ExpressError");
+
 const morgan = require("morgan");
-const colors = require("colors");
+const ejsMate = require("ejs-mate");
 const methodOverride = require("method-override");
-const Campground = require("./models/campground");
-const Review = require("./models/review");
+
+const ExpressError = require("./utils/ExpressError");
 
 const campgrounds = require("./routes/campgrounds");
+const reviews = require("./routes/reviews");
 
 // database config
 env.config();
@@ -44,50 +42,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(morgan("dev"));
 
-
-
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map((el) => el.message).join(",");
-        throw new ExpressError(msg, 400);
-    } else {
-        next();
-    }
-};
-
 // routes
 
 app.use("/campgrounds", campgrounds);
+app.use("/campgrounds/:id/reviews", reviews);
 
 app.get("/", (req, res) => {
     res.render("home");
 });
-
-app.post(
-    "/campgrounds/:id/reviews",
-    validateReview,
-    catchAsync(async (req, res) => {
-        const campground = await Campground.findById(req.params.id);
-        const review = new Review(req.body.review);
-        campground.reviews.push(review);
-        await review.save();
-        await campground.save();
-        res.redirect(`/campgrounds/${campground._id}`);
-    })
-);
-
-app.delete(
-    "/campgrounds/:id/reviews/:reviewId",
-    catchAsync(async (req, res) => {
-        const { id, reviewId } = req.params;
-        await Campground.findByIdAndUpdate(id, {
-            $pull: { reviews: reviewId },
-        });
-        await Review.findByIdAndDelete(req.params.reviewId);
-        res.redirect(`/campgrounds/${id}`);
-    })
-);
 
 // error handling
 app.all("*", (req, res, next) => {
