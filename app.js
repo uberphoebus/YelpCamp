@@ -35,15 +35,18 @@ db.once("open", () => {
 
 // app/middleware config
 const app = express();
+
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.urlencoded({ extended: true }));
+
 app.use(methodOverride("_method"));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "public")));
+
 app.use(morgan("dev"));
 
 // routes
-
 app.use("/campgrounds", campgrounds);
 app.use("/campgrounds/:id/reviews", reviews);
 
