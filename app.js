@@ -16,9 +16,11 @@ const flash = require("connect-flash");
 
 const ExpressError = require("./utils/ExpressError");
 
-const campgrounds = require("./routes/campgrounds");
-const reviews = require("./routes/reviews");
 const User = require("./models/user");
+
+const userRoutes = require("./routes/users");
+const campgroundsRoutes = require("./routes/campgrounds");
+const reviewsRoutes = require("./routes/reviews");
 
 // database config
 env.config();
@@ -85,8 +87,9 @@ app.get("/fakeUser", async (req, res) => {
 });
 
 // routes
-app.use("/campgrounds", campgrounds);
-app.use("/campgrounds/:id/reviews", reviews);
+app.use("/", userRoutes);
+app.use("/campgrounds", campgroundsRoutes);
+app.use("/campgrounds/:id/reviews", reviewsRoutes);
 
 app.get("/", (req, res) => {
     res.render("home");
