@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== "production") {
+    require("dotenv").config();
+}
+
 const Campground = require("./models/campground");
 const Review = require("./models/review");
 const { campgroundSchema, reviewSchema } = require("./schemas.js");
